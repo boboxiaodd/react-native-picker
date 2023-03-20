@@ -32,6 +32,11 @@
     return YES;
 }
 
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[@"pickerEvent"];
+}
+
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(_init:(NSDictionary *)indic){
@@ -73,26 +78,20 @@ RCT_EXPORT_METHOD(_init:(NSDictionary *)indic){
         }
 
     }];
-
-    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 9.0 ) {
-        self.height=250;
-    }else{
-        self.height=220;
-    }
+    self.height =  250;
     
+    __weak __typeof(self)weakSelf = self;
     self.pick=[[BzwPicker alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, self.height) dic:dataDic leftStr:pickerCancelBtnText centerStr:pickerTitleText rightStr:pickerConfirmBtnText topbgColor:pickerToolBarBg bottombgColor:pickerBg leftbtnbgColor:pickerCancelBtnColor rightbtnbgColor:pickerConfirmBtnColor centerbtnColor:pickerTitleColor selectValueArry:selectArry weightArry:weightArry pickerToolBarFontSize:pickerToolBarFontSize pickerFontSize:pickerFontSize pickerFontColor:pickerFontColor  pickerRowHeight: pickerRowHeight pickerFontFamily:pickerFontFamily];
     
     _pick.bolock=^(NSDictionary *backinfoArry){
-
         dispatch_async(dispatch_get_main_queue(), ^{
-
-            [self.bridge.eventDispatcher sendAppEventWithName:@"pickerEvent" body:backinfoArry];
+            [weakSelf sendEventWithName:@"pickerEvent" body:backinfoArry];
         });
     };
 
     dispatch_async(dispatch_get_main_queue(), ^{
 
-        [self.window addSubview:_pick];
+        [self.window addSubview:self.pick];
     });
 
 }
@@ -103,7 +102,7 @@ RCT_EXPORT_METHOD(show){
         dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:.3 animations:^{
 
-                [_pick setFrame:CGRectMake(0, SCREEN_HEIGHT-self.height, SCREEN_WIDTH, self.height)];
+                [self.pick setFrame:CGRectMake(0, SCREEN_HEIGHT-self.height, SCREEN_WIDTH, self.height)];
 
             }];
         });
@@ -115,7 +114,7 @@ RCT_EXPORT_METHOD(hide){
     if (self.pick) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:.3 animations:^{
-                [_pick setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, self.height)];
+                [self.pick setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, self.height)];
             }];
         });
     }
@@ -129,8 +128,8 @@ RCT_EXPORT_METHOD(select: (NSArray*)data){
 
     if (self.pick) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            _pick.selectValueArry = data;
-            [_pick selectRow];
+            self.pick.selectValueArry = data;
+            [self.pick selectRow];
         });
     }return;
 }
