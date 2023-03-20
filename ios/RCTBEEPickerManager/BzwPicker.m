@@ -49,7 +49,7 @@
     
     self.leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.leftBtn.frame = CGRectMake(0, 0, 90, 40);
-    self.leftBtn.font = [UIFont fontWithName:_pickerFontFamily size:[_pickerToolBarFontSize integerValue]];
+//    self.leftBtn.font = [UIFont fontWithName:_pickerFontFamily size:[_pickerToolBarFontSize integerValue]];
     self.leftBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.leftBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, 10.0, 0, 0)];
     [self.leftBtn setTitle:self.leftStr forState:UIControlStateNormal];
@@ -59,7 +59,7 @@
     
     self.rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.rightBtn.frame = CGRectMake(view.frame.size.width-90,0, 90, 40);
-    self.rightBtn.font = [UIFont fontWithName:_pickerFontFamily size:[_pickerToolBarFontSize integerValue]];
+//    self.rightBtn.font = [UIFont fontWithName:_pickerFontFamily size:[_pickerToolBarFontSize integerValue]];
     self.rightBtn.contentHorizontalAlignment=UIControlContentHorizontalAlignmentRight;
     [self.rightBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10.0)];
     [self.rightBtn setTitle:self.rightStr forState:UIControlStateNormal];
@@ -79,6 +79,12 @@
     self.pick.dataSource = self;
     self.pick.showsSelectionIndicator=YES;
     [self addSubview:self.pick];
+    CGFloat bottom = UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom;
+    if(bottom > 0){
+        UIView * bottomView = [[UIView alloc] initWithFrame:CGRectMake(0,self.frame.size.height-bottom, SCREEN_WIDTH, bottom)];
+        bottomView.backgroundColor = [self colorWith:bottombgColor];
+        [self addSubview:bottomView];
+    }
     
     self.pick.backgroundColor=[self colorWith:bottombgColor];
 }
@@ -452,7 +458,7 @@
     
     if([value count] == 0) {
         value = [[NSMutableArray alloc] init];
-        [dic setValue:[NSNumber numberWithInt:[_pick selectedRowInComponent:0]] forKey:@"selectedIndex"];
+        [dic setValue:[NSNumber numberWithInt:(int)[_pick selectedRowInComponent:0]] forKey:@"selectedIndex"];
     } else {
         [dic setValue:value forKey:@"selectedIndex"];
     }
@@ -624,7 +630,7 @@
         
         [dic setValue:self.backArry forKey:@"selectedValue"];
         [dic setValue:@"confirm" forKey:@"type"];
-        NSMutableArray *arry=[[NSMutableArray alloc]init];
+//        NSMutableArray *arry=[[NSMutableArray alloc]init];
         [dic setValue:[self getselectIndexArry] forKey:@"selectedIndex"];
 //        [dic setValue:arry forKey:@"selectedIndex"];
         
@@ -924,7 +930,7 @@
     UIColor *color=[[UIColor alloc]initWithRed:[ColorA integerValue]/255.0 green:[ColorB integerValue]/255.0 blue:[ColorC integerValue]/255.0 alpha:[ColorD floatValue]];
     return color;
 }
--(NSArray *)getselectIndexArry{
+-(NSMutableArray *)getselectIndexArry{
     
     NSMutableArray *arry=[[NSMutableArray alloc]init];
     for (NSInteger i=0; i<_seleNum; i++) {
@@ -943,7 +949,7 @@
         lbl = [[UILabel alloc]init];
         lbl.font = [UIFont fontWithName:_pickerFontFamily size:[_pickerFontSize integerValue]];
         lbl.textColor = [self colorWith:_pickerFontColor];
-        lbl.textAlignment = UITextAlignmentCenter;
+        lbl.textAlignment = NSTextAlignmentCenter;
     }
     
     //重新加载lbl的文字内容
