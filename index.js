@@ -1,12 +1,13 @@
 import {
     Platform,
     NativeModules,
-    NativeAppEventEmitter
+    NativeEventEmitter,
 } from 'react-native';
 
 const ios = Platform.OS === 'ios';
 const android = Platform.OS === 'android';
 const Picker = NativeModules.BEEPickerManager;
+const PickerEvent = new NativeEventEmitter(Picker);
 const options = {
     isLoop: false,
     pickerConfirmBtnText: 'confirm',
@@ -43,9 +44,8 @@ export default {
         };
 
         Picker._init(opt);
-        //there are no `removeListener` for NativeAppEventEmitter & DeviceEventEmitter
         this.listener && this.listener.remove();
-        this.listener = NativeAppEventEmitter.addListener('pickerEvent', event => {
+        this.listener = PickerEvent.addListener('pickerEvent', event => {
             fnConf[event['type']](event['selectedValue'], event['selectedIndex']);
         });
     },
