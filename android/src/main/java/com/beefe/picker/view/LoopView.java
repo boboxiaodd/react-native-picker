@@ -109,7 +109,7 @@ public class LoopView extends View {
 
         lineSpacingMultiplier = 2.0F;
         isLoop = true;
-        itemsVisible = 9;
+        itemsVisible = 13;
         textSize = (int) (context.getResources().getDisplayMetrics().density * 16);
 
         totalScrollY = 0;
