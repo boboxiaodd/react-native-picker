@@ -1,7 +1,7 @@
 import {
     Platform,
     NativeModules,
-    NativeEventEmitter,
+    NativeEventEmitter, DeviceEventEmitter,
 } from 'react-native';
 
 const ios = Platform.OS === 'ios';
@@ -46,15 +46,24 @@ export default {
         Picker._init(opt);
         this.listener && this.listener.remove();
         this.listener = PickerEvent.addListener('pickerEvent', event => {
+            if(event['type'] !== 'select'){
+                DeviceEventEmitter.emit('hide_overlay',{});
+            }
             fnConf[event['type']](event['selectedValue'], event['selectedIndex']);
         });
     },
 
     show(){
+        console.log("picker is show...");
+        DeviceEventEmitter.emit('show_overlay',{
+            onPress : () => { this.hide();}
+        });
         Picker.show();
     },
 
     hide(){
+        console.log("picker is hide...");
+        DeviceEventEmitter.emit('hide_overlay',{});
         Picker.hide();
     },
 
