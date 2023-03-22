@@ -148,6 +148,15 @@ public class PickerViewModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
+    public void addListener(String eventName){
+
+    }
+    @ReactMethod
+    public void removeListeners(Integer count){
+
+    }
+
+    @ReactMethod
     public void _init(ReadableMap options) {
         Activity activity = getCurrentActivity();
         if (activity != null && options.hasKey(PICKER_DATA)) {
