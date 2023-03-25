@@ -605,14 +605,14 @@
         self.bolock(dic);
     }
     
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIView animateWithDuration:.2f animations:^{
+//  上一层已经执行动画，会引起闪烁    
+//     dispatch_async(dispatch_get_main_queue(), ^{
+//         [UIView animateWithDuration:.2f animations:^{
             
-            [self setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 250)];
+//             [self setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 250)];
             
-        }];
-    });
+//         }];
+//     });
 
     self.pick.hidden=YES;
 }
