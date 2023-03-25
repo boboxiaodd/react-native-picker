@@ -605,7 +605,7 @@
         self.bolock(dic);
     }
     
-//  上一层已经执行动画，会引起闪烁    
+//  动画放到上一层处理    
 //     dispatch_async(dispatch_get_main_queue(), ^{
 //         [UIView animateWithDuration:.2f animations:^{
             
@@ -614,7 +614,7 @@
 //         }];
 //     });
 
-    self.pick.hidden=YES;
+//     self.pick.hidden=YES;
 }
 //按了确定按钮
 -(void)cfirmAction
