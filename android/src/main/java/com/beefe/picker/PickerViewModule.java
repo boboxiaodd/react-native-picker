@@ -156,6 +156,78 @@ public class PickerViewModule extends ReactContextBaseJavaModule implements Life
 
     }
 
+    private Dialog backdropDialog;
+
+    private void showBackdrop() {
+
+        Activity activity = getCurrentActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        if (backdropDialog != null && backdropDialog.isShowing()) {
+            return;
+        }
+
+        backdropDialog = new Dialog(
+                activity,
+                android.R.style.Theme_Translucent_NoTitleBar
+        );
+
+        View view = new View(activity);
+        view.setBackgroundColor(0x66000000);
+
+        backdropDialog.setContentView(view);
+
+        Window window = backdropDialog.getWindow();
+
+        if (window != null) {
+
+            window.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+            );
+
+            window.clearFlags(
+                    WindowManager.LayoutParams.FLAG_DIM_BEHIND
+            );
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                window.addFlags(
+                        WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                );
+
+                window.setNavigationBarColor(Color.WHITE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    View decorView = window.getDecorView();
+
+                    decorView.setSystemUiVisibility(
+                            decorView.getSystemUiVisibility()
+                                    | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                    );
+                }
+            }
+
+        }
+
+
+
+        backdropDialog.show();
+    }
+
+    private void hideBackdrop() {
+
+        if (backdropDialog != null) {
+
+            backdropDialog.dismiss();
+            backdropDialog = null;
+        }
+    }
+
     @ReactMethod
     public void _init(ReadableMap options) {
         Activity activity = getCurrentActivity();
@@ -399,9 +471,29 @@ public class PickerViewModule extends ReactContextBaseJavaModule implements Life
             if (dialog == null) {
                 dialog = new Dialog(activity, R.style.Dialog_Full_Screen);
                 dialog.setContentView(view);
+                dialog.setCancelable(true);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnCancelListener(dialogInterface -> {
+                    switch (curStatus) {
+                        case 0:
+                            returnData = pickerViewAlone.getSelectedData();
+                            break;
+                        case 1:
+                            returnData = pickerViewLinkage.getSelectedData();
+                            break;
+                    }
+
+                    commonEvent(EVENT_KEY_CANCEL);
+                    hide();
+                    hideBackdrop();
+                });
                 WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
                 Window window = dialog.getWindow();
                 if (window != null) {
+
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                    window.setDimAmount(0.5f);
+
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                     }else{
@@ -411,7 +503,7 @@ public class PickerViewModule extends ReactContextBaseJavaModule implements Life
                             //layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
                         }
                     }
-                    layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                    layoutParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
                     layoutParams.format = PixelFormat.TRANSPARENT;
                     layoutParams.windowAnimations = R.style.PickerAnim;
                     layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -444,6 +536,7 @@ public class PickerViewModule extends ReactContextBaseJavaModule implements Life
             return;
         }
         if (!dialog.isShowing()) {
+            showBackdrop();
             dialog.show();
         }
     }
@@ -455,6 +548,7 @@ public class PickerViewModule extends ReactContextBaseJavaModule implements Life
         }
         if (dialog.isShowing()) {
             dialog.dismiss();
+            hideBackdrop();
         }
     }
 
